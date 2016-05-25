@@ -1,0 +1,1 @@
+export {NinjaBlockPluginLoader} from './loader';

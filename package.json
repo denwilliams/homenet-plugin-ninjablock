@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "homenet-core": "^4.0.0-alpha.8",
+    "socket.io-client": "^1.4.6"
+  }
+}
