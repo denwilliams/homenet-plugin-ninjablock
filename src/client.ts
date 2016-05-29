@@ -1,6 +1,9 @@
 import socketIo = require('socket.io-client');
+import { ILogger } from 'homenet-core';
 
-export function connect(url, ninjaSensors, sensors, logger) {
+export interface ISensorCallback { (data: {event: string, device: string, deviceName: string, type: string, data: string}) : void; }
+
+export function connect(url: string, logger: ILogger, sensorCallback: ISensorCallback) {
 
   logger.info('Connecting to bridge ' + url);
 
@@ -14,12 +17,8 @@ export function connect(url, ninjaSensors, sensors, logger) {
   });
 
   socket.on('0_0_11.rfsensor', function(data){
-    logger.info('Got RF sensor data ' + JSON.stringify(data));
-    var homenetSensorId = ninjaSensors[data.deviceName];
-    if (!homenetSensorId) return;
-    logger.info('Sensor triggered from Ninjabridge ' + homenetSensorId);
-    sensors.trigger(homenetSensorId, true);
-    //console.log('0_0_11.rfsensor', data);
+    logger.debug('Got RF sensor data ' + JSON.stringify(data));
+    sensorCallback(data);
   });
 
   // socket.on('event', function(data) {

@@ -1,1 +1,1 @@
-export {NinjaBlockPluginLoader} from './loader';
+export { NinjaBlockPluginLoader } from './loader';
