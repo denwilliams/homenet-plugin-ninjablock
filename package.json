@@ -1,7 +1,7 @@
 {
   "name": "homenet-plugin-ninjablock",
   "description": "Plugin for using Ninja Blocks with Homenet",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "lib/index.js",
   "dependencies": {
     "chalk": "^1.1.3",
