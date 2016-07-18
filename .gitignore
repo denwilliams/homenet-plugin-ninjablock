@@ -34,3 +34,5 @@ node_modules
 
 lib/**/*
 typings/
+
+test.js
