@@ -3,14 +3,6 @@ import {EventEmitter} from 'events';
 import {connect} from './client';
 import {NinjaBlockSensor} from './sensor';
 
-// export interface PluginType { (): (typeConstructor: any) => void }
-// export interface ServiceType { (serviceIdentifier: string): (target: any, targetKey: string, index?: number) => any }
-
-// export function getPluginLoader(
-//             plugin: PluginType,
-//             service: ServiceType
-//           ) : new (...args: any[]) => IPluginLoader {
-
 @plugin()
 export class NinjaBlockPluginLoader implements IPluginLoader {
 
@@ -23,9 +15,6 @@ export class NinjaBlockPluginLoader implements IPluginLoader {
   constructor(
           @service('IConfig') config: IConfig,
           @service('ISensorManager') sensors: ISensorManager,
-          @service('ITriggerManager') triggers: ITriggerManager,
-          @service('IPresenceManager') presence: IPresenceManager,
-          @service('IValuesManager') values: IValuesManager,
           @service('ILogger') logger: ILogger) {
 
     this._logger = logger;
@@ -36,7 +25,7 @@ export class NinjaBlockPluginLoader implements IPluginLoader {
     this._ninjaSensors = {};
     this._ninjaBridges = {};
 
-    sensors.addType('ninja', this._createSensorsFactory(triggers, presence, values));
+    sensors.addType('ninja', this._createSensorsFactory());
     this._init();
   }
 
@@ -50,30 +39,35 @@ export class NinjaBlockPluginLoader implements IPluginLoader {
     const ninjaConfig = (<any>this._config).ninjaBlocks || {};
     const bridgeConfigs = ninjaConfig.bridges || [];
 
-    const sensorCallback =
-
     bridgeConfigs.forEach(b => {
       const url: string = 'http://' + b.host + ':3000';
+      const bridgeId = b.id;
       this._logger.info('Connecting to ninja block ' + url);
-      this._ninjaBridges[b.id] = connect(url, this._logger, (data) => {
-        var ninjaSensor = this._ninjaSensors[b.id + ':' + data.deviceName];
+      this._ninjaBridges[bridgeId] = connect(url, this._logger, (e) => {
+        var ninjaSensor: NinjaBlockSensor = this._ninjaSensors[bridgeId + ':' + (e.deviceName || e.device)];
         if (!ninjaSensor) return;
-        this._logger.info('Sensor triggered from Ninjabridge ' + data.deviceName);
-        ninjaSensor.trigger();
+        switch (e.type) {
+          case 'humidity':
+          case 'temperature':
+          case 'eyes':
+          case 'statuslight':
+            ninjaSensor.emit('value', e.type, e.data);
+            break;
+          default:
+            this._logger.info('Sensor triggered from Ninjabridge ' + (e.deviceName || e.device));
+            ninjaSensor.emit('trigger');
+            break;
+        }
       });
     });
   }
 
-  _createSensorsFactory(triggers: ITriggerManager, presence: IPresenceManager, values: IValuesManager) : IClassTypeFactory<ISensor> {
+  _createSensorsFactory() : IClassTypeFactory<ISensor> {
     const ninjaSensors = this._ninjaSensors;
     return function factory(id: string, opts: {bridge: string, deviceName: string, zone?: string, timeout?: number}) : ISensor {
-      const sensor = new NinjaBlockSensor(id, opts, triggers, presence, values);
+      const sensor = new NinjaBlockSensor(id, opts);
       ninjaSensors[opts.bridge + ':' + opts.deviceName] = sensor;
       return sensor;
     }
   }
 }
-
-
-//   return NinjaBlockPluginLoader;
-// }

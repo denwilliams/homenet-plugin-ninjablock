@@ -16,14 +16,15 @@ export function connect(url: string, logger: ILogger, sensorCallback: ISensorCal
     logger.info('Ninjabridge disconnected');
   });
 
-  socket.on('0_0_11.rfsensor', function(data){
-    logger.debug('Got RF sensor data ' + JSON.stringify(data));
-    sensorCallback(data);
-  });
-
-  // socket.on('event', function(data) {
-  //  console.log('event', data);
+  // socket.on('0_0_11.rfsensor', function(data){
+  //   logger.debug('Got RF sensor data ' + JSON.stringify(data));
+  //   sensorCallback(data);
   // });
+
+  socket.on('event', function(data) {
+    sensorCallback(data);
+  //  console.log('event', data);
+  });
 
   return socket;
 }
