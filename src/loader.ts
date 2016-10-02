@@ -42,9 +42,9 @@ export class NinjaBlockPluginLoader implements IPluginLoader {
     const bridgeConfigs = ninjaConfig.bridges || [];
 
     bridgeConfigs.forEach(b => {
-      const url: string = 'http://' + b.host + ':3000';
+      const url: string = `http://${b.host}:3000`;
       const bridgeId = b.id;
-      this._logger.info('Connecting to ninja block ' + url);
+      this._logger.info(`Connecting to ninja block ${url}`);
       this._ninjaBridges[bridgeId] = connect(url, this._logger, (e) => {
         var ninjaSensor: NinjaBlockSensor = this._ninjaSensors[bridgeId + ':' + (e.deviceName || e.device)];
         if (!ninjaSensor) return;
