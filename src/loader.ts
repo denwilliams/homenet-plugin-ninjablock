@@ -5,7 +5,6 @@ import {NinjaBlockSensor} from './sensor';
 
 @plugin()
 export class NinjaBlockPluginLoader implements IPluginLoader {
-
   private _logger : ILogger;
   private _config : IConfig;
   private _sensors : ISensorManager;
@@ -26,6 +25,9 @@ export class NinjaBlockPluginLoader implements IPluginLoader {
     this._ninjaBridges = {};
 
     sensors.addType('ninja', this._createSensorsFactory());
+    sensors.addType('ninja-trigger', this._createSensorsFactory('trigger'));
+    sensors.addType('ninja-temperature', this._createSensorsFactory('value'));
+    sensors.addType('ninja-humidity', this._createSensorsFactory('value'));
     this._init();
   }
 
@@ -40,9 +42,9 @@ export class NinjaBlockPluginLoader implements IPluginLoader {
     const bridgeConfigs = ninjaConfig.bridges || [];
 
     bridgeConfigs.forEach(b => {
-      const url: string = 'http://' + b.host + ':3000';
+      const url: string = `http://${b.host}:3000`;
       const bridgeId = b.id;
-      this._logger.info('Connecting to ninja block ' + url);
+      this._logger.info(`Connecting to ninja block ${url}`);
       this._ninjaBridges[bridgeId] = connect(url, this._logger, (e) => {
         var ninjaSensor: NinjaBlockSensor = this._ninjaSensors[bridgeId + ':' + (e.deviceName || e.device)];
         if (!ninjaSensor) return;
@@ -62,10 +64,19 @@ export class NinjaBlockPluginLoader implements IPluginLoader {
     });
   }
 
-  _createSensorsFactory() : IClassTypeFactory<ISensor> {
+  _createSensorsFactory(type?: 'trigger' | 'value') : IClassTypeFactory<ISensor> {
     const ninjaSensors = this._ninjaSensors;
     return function factory(id: string, opts: {bridge: string, deviceName: string, zone?: string, timeout?: number}) : ISensor {
       const sensor = new NinjaBlockSensor(id, opts);
+      if (!type || type === 'trigger') {
+        sensor.isTrigger = true;
+        sensor.isToggle = false;
+        sensor.isValue = false;
+      } else if (type && type === 'value') {
+        sensor.isTrigger = false;
+        sensor.isToggle = false;
+        sensor.isValue = true;
+      }
       ninjaSensors[opts.bridge + ':' + opts.deviceName] = sensor;
       return sensor;
     }
