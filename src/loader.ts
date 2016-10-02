@@ -68,7 +68,7 @@ export class NinjaBlockPluginLoader implements IPluginLoader {
     const ninjaSensors = this._ninjaSensors;
     return function factory(id: string, opts: {bridge: string, deviceName: string, zone?: string, timeout?: number}) : ISensor {
       const sensor = new NinjaBlockSensor(id, opts);
-      if (type && type === 'trigger') {
+      if (!type || type === 'trigger') {
         sensor.isTrigger = true;
         sensor.isToggle = false;
         sensor.isValue = false;
