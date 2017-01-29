@@ -1,5 +1,5 @@
 {
-  "name": "homenet-plugin-ninjablock",
+  "name": "@homenet/plugin-ninjablock",
   "description": "Plugin for using Ninja Blocks with Homenet",
   "version": "0.0.4",
   "main": "lib/index.js",
