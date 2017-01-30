@@ -1,5 +1,5 @@
 import socketIo = require('socket.io-client');
-import { ILogger } from 'homenet-core';
+import { ILogger } from '@homenet/core';
 
 export interface ISensorCallback { (data: {event: string, device: string, deviceName: string, type: string, data: string}) : void; }
 
