@@ -1,4 +1,4 @@
-import { ISensor, ISensorOpts, ITriggerManager, IPresenceManager, IValuesManager } from 'homenet-core';
+import { ISensor, ISensorOpts, ITriggerManager, IPresenceManager, IValuesManager } from '@homenet/core';
 import { EventEmitter } from 'events';
 import chalk = require('chalk');
 

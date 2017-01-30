@@ -1,4 +1,4 @@
-import {plugin, service, IPluginLoader, ILogger, IConfig, ISensorManager, ISensor, ITriggerManager, IPresenceManager, IValuesManager, IClassTypeFactory} from 'homenet-core';
+import {plugin, service, IPluginLoader, ILogger, IConfig, ISensorManager, ISensor, ITriggerManager, IPresenceManager, IValuesManager, IClassTypeFactory} from '@homenet/core';
 import {EventEmitter} from 'events';
 import {connect} from './client';
 import {NinjaBlockSensor} from './sensor';
